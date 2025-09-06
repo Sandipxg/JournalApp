@@ -1,0 +1,24 @@
+------------------------------------------------------------------
+------------------- Understanding Project Flow -------------------
+------------------------------------------------------------------
+
+1] Controller (API Layer 🚪) :-
+    You expose APIs here using annotations (@GetMapping, @PostMapping, etc.).
+    The controller does not contain business logic, it only receives the request, calls the service,and returns the response.
+
+2] Service (Business Logic 🧠) :-
+    You write the main logic here.
+    Example: checking if a user already exists before saving, applying discounts, validating inputs, etc.
+    Service layer is reusable — same logic can be called from multiple controllers.
+
+
+3] Repository (Database Layer 🗄️)
+    This is the layer that talks directly to the database (MySQL, MongoDB, etc.).
+    Usually an interface that extends JpaRepository, CrudRepository, etc.
+    Service calls repository → repository runs queries → returns data.
+
+
+-------OVERVIEW-------
+Controller = API entry point
+Service = business rules
+Repository = database communication
