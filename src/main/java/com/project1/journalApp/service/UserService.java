@@ -25,6 +25,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void saveNewUser(User user){
+        userRepository.save(user);
+    }
+
     public Optional<User> findById(ObjectId id){
         return userRepository.findById(id);
     }

@@ -1,0 +1,44 @@
+------------------------------------------------------------------
+----------------------- Http Request Filter ----------------------
+------------------------------------------------------------------
+
+return http.authorizeHttpRequests(request -> request
+    .requestMatchers("/public/**").permitAll()
+    .requestMatchers("/journal/**", "/user/**").authenticated()
+    .requestMatchers("/admin/**").hasRole("ADMIN")
+    .anyRequest().authenticated())
+
+
+    1] .authorizeHttpRequests()
+        This enables authorization rules for HTTP requests.
+
+    2] .requestMatchers("/public/**").permitAll()
+        Matches all URLs starting with /public/
+        permitAll() → No login needed, anyone can access.
+        Example: /public/home, /public/about are freely accessible.
+
+    3] authenticated() → User must be logged in (any valid user can access).
+        Example: /journal/add, /user/profile
+
+    4] .requestMatchers("/admin/**").hasRole("ADMIN")
+        Matches all URLs starting with /admin/
+        Only users with ROLE_ADMIN can access.
+        Example: /admin/dashboard
+
+    5] .anyRequest().authenticated()
+        Any other URL not listed above must also require login.
+        This is a catch-all rule.
+
+    6] .httpBasic(Customizer.withDefaults())
+        Enables HTTP Basic Authentication (username/password pop-up or Authorization header in API clients like Postman).
+        This is simple but not the most secure option for production. (JWT or OAuth2 is usually better.)
+
+    7] .csrf(AbstractHttpConfigurer::disable)
+        CSRF = Cross-Site Request Forgery protection.
+        Here, you are disabling it.
+        This is common when building REST APIs (because APIs are usually stateless).
+        But if you have a web form with sessions (like a normal website), disabling CSRF might make it vulnerable to attacks.
+
+    8] .build();
+        Finally, the SecurityFilterChain is built and returned.
+        Spring Boot will use this configuration for every incoming request.

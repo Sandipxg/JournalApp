@@ -27,6 +27,8 @@ public class User {
 
     @DBRef // with @DBRef, MongoDB only stores the @Id (reference) of related documents, never the whole object
     private List<JournalEntry> journalEntries = new ArrayList<>();
+
+    private List<String> roles;
 }
 
 
