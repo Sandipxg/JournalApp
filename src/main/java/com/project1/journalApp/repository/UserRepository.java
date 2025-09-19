@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface UserRepository extends MongoRepository<User, ObjectId> {
 
     User findByUsername(String username);
+
+    void deleteByUserName(String username);
     // Spring_is_smart
     // Spring Data reads your method name, builds a query automatically,
     // executes it, maps the result to User, and returns it...

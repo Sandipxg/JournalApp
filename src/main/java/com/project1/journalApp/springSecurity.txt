@@ -42,3 +42,27 @@ return http.authorizeHttpRequests(request -> request
     8] .build();
         Finally, the SecurityFilterChain is built and returned.
         Spring Boot will use this configuration for every incoming request.
+
+
+------------------------------------------------------------------
+Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+------------------------------------------------------------------
+
+SecurityContextHolder
+    This is a Spring Security class that holds security information (like who is logged in) for the current thread (request).
+    Think of it as a “context” for the current request’s authentication.
+
+.getContext()
+    Returns the SecurityContext, which contains the authentication object.
+
+.getAuthentication()
+    Returns the Authentication object for the current user.
+    If the user is not logged in, this can be null or have isAuthenticated() = false.
+    If the user is logged in, it contains info like:
+
+getName() → username
+    getAuthorities() → roles/permissions
+    getCredentials() → usually password (or token, depending on auth)
+
+------------------------------------------------------------------
+

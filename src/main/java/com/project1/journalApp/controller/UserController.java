@@ -2,10 +2,14 @@ package com.project1.journalApp.controller;
 
 
 import com.project1.journalApp.entity.User;
+import com.project1.journalApp.repository.UserRepository;
 import com.project1.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +20,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
 
     @GetMapping
@@ -28,14 +35,16 @@ public class UserController {
         userService.saveEntry(user);
     }
 
-    @PutMapping("/{userName}")
-    public ResponseEntity<?> updateUser(@RequestBody User user,@PathVariable String userName){
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody User user){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
         User userInDb = userService.findByUserName(userName);
-        if(userInDb!=null){
-            userInDb.setUsername(user.getUsername());
-            userInDb.setPassword(user.getPassword());
-            userService.saveEntry(userInDb);
-        }
+        userInDb.setUsername(user.getUsername());
+        userInDb.setPassword(user.getPassword());
+        userService.saveEntry(userInDb);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     /*
@@ -51,6 +60,14 @@ public class UserController {
         --> Updated with values from user.
         --> Saved back to DB.
     */
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteUserById() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        userRepository.deleteByUserName(authentication.getName());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
 
 
