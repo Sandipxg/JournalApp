@@ -66,3 +66,77 @@ getName() → username
 
 ------------------------------------------------------------------
 
+
+
+------------------------------------------------------------------
+--------------- UserDetailsService & PasswordEncoder -------------
+------------------------------------------------------------------
+
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
+
+1] UserDetailsService
+    Spring Security interface used to load user-specific data during authentication.
+    Custom implementation (UserDetailsServiceImpl) retrieves user details from the database (MongoDB in this case).
+    Method loadUserByUsername(String username) returns a UserDetails object containing username, password, and roles.
+    Integrates your application’s User entity with Spring Security authentication flow.
+
+2] PasswordEncoder
+    BCryptPasswordEncoder hashes passwords before storing them in the database.
+    Ensures passwords are not stored in plaintext.
+    During login, Spring Security compares hashed passwords automatically.
+
+
+
+------------------------------------------------------------------
+------------------ Custom Security Configuration -----------------
+------------------------------------------------------------------
+
+1] SecurityFilterChain
+    Spring Security 6 no longer requires extending WebSecurityConfigurerAdapter.
+    Define SecurityFilterChain bean to configure authorization rules.
+
+2] Endpoint segregation
+    /public/** → public endpoints, no login needed.
+    /journal/** and /user/** → authenticated endpoints.
+    /admin/** → accessible only by users with ROLE_ADMIN.
+    .anyRequest().authenticated() → any unspecified endpoint also requires login.
+
+3] HTTP Basic Authentication
+    Simple authentication mechanism using username/password.
+    Credentials sent in Authorization header (Base64 encoded).
+    Suitable for testing APIs (like Postman), not recommended for production.
+
+4] CSRF
+    Disabled for REST APIs (stateless) using:
+    .csrf(AbstractHttpConfigurer::disable)
+    Avoids issues with stateful sessions in APIs.
+
+
+
+------------------------------------------------------------------
+
+----------------------- User Creation & Roles ----------------------
+
+------------------------------------------------------------------
+
+1] User Entity
+    Contains fields like username, password, and roles.
+    Passwords should always be stored hashed (BCrypt).
+
+2] UserRepository
+    Spring Data MongoDB repository for CRUD operations on users.
+
+3] User Creation Endpoint
+    Publicly accessible endpoint to allow new user registration.
+    @PostMapping("/users")
+    public void createUser(@RequestBody User user){
+        userService.saveEntry(user);
+    }
+
+4] Role-Based Authorization
+    Role list in user entity enables fine-grained access control.
+    Example: only ADMIN can access /admin/**.
+
+
