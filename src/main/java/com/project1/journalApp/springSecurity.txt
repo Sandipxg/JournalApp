@@ -1,142 +1,205 @@
-------------------------------------------------------------------
------------------------ Http Request Filter ----------------------
-------------------------------------------------------------------
+# 🛡️ Spring Security + MongoDB (Full Video Summary)
 
-return http.authorizeHttpRequests(request -> request
-    .requestMatchers("/public/**").permitAll()
-    .requestMatchers("/journal/**", "/user/**").authenticated()
-    .requestMatchers("/admin/**").hasRole("ADMIN")
-    .anyRequest().authenticated())
+🔑 Core Concepts of Spring Security (Authentication vs Authorization)
+🧩 SecurityFilterChain step-by-step with explanations for each method
+🔄 BCrypt Password Encoding and why it’s used
+🗄️ UserDetailsService Implementation and its role
+🌐 Basic Auth explained with examples for Postman
+🧠 SecurityContextHolder & Authentication Object usage and what data it holds
+🔧 CSRF Disable Reasoning (REST API best practice vs Web app risk)
+📝 Practical Tips (creating users, testing endpoints, resolving 401s)
+⚠️ Common Issues & Fixes (IP whitelisting in MongoDB, allow-circular-references, etc.)
 
+============================================================
+📖 CHAPTER 1 – AUTHENTICATION VS AUTHORIZATION
+============================================================
 
-    1] .authorizeHttpRequests()
-        This enables authorization rules for HTTP requests.
+**Authentication** → Confirms **who you are**
+--> Checks username & password
+--> Example: Logging in with your credentials
 
-    2] .requestMatchers("/public/**").permitAll()
-        Matches all URLs starting with /public/
-        permitAll() → No login needed, anyone can access.
-        Example: /public/home, /public/about are freely accessible.
+**Authorization** → Confirms **what you can do**
+--> Checks roles & permissions
+--> Example: Only ADMIN can access /admin/**
 
-    3] authenticated() → User must be logged in (any valid user can access).
-        Example: /journal/add, /user/profile
-
-    4] .requestMatchers("/admin/**").hasRole("ADMIN")
-        Matches all URLs starting with /admin/
-        Only users with ROLE_ADMIN can access.
-        Example: /admin/dashboard
-
-    5] .anyRequest().authenticated()
-        Any other URL not listed above must also require login.
-        This is a catch-all rule.
-
-    6] .httpBasic(Customizer.withDefaults())
-        Enables HTTP Basic Authentication (username/password pop-up or Authorization header in API clients like Postman).
-        This is simple but not the most secure option for production. (JWT or OAuth2 is usually better.)
-
-    7] .csrf(AbstractHttpConfigurer::disable)
-        CSRF = Cross-Site Request Forgery protection.
-        Here, you are disabling it.
-        This is common when building REST APIs (because APIs are usually stateless).
-        But if you have a web form with sessions (like a normal website), disabling CSRF might make it vulnerable to attacks.
-
-    8] .build();
-        Finally, the SecurityFilterChain is built and returned.
-        Spring Boot will use this configuration for every incoming request.
+🔑 Both are required for a secure system:
+--> Without authentication → anyone can access anything
+--> Without authorization → all users can access admin features
 
 
-------------------------------------------------------------------
-Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-------------------------------------------------------------------
+============================================================
+📖 CHAPTER 2 – ADDING SPRING SECURITY DEPENDENCY
+============================================================
 
-SecurityContextHolder
-    This is a Spring Security class that holds security information (like who is logged in) for the current thread (request).
-    Think of it as a “context” for the current request’s authentication.
+Add to pom.xml:
 
-.getContext()
-    Returns the SecurityContext, which contains the authentication object.
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
 
-.getAuthentication()
-    Returns the Authentication object for the current user.
-    If the user is not logged in, this can be null or have isAuthenticated() = false.
-    If the user is logged in, it contains info like:
-
-getName() → username
-    getAuthorities() → roles/permissions
-    getCredentials() → usually password (or token, depending on auth)
-
-------------------------------------------------------------------
+Once added:
+--> All endpoints are secured by default
+--> Spring Boot generates a random password on startup (printed in console)
+--> Basic login form is automatically provided
 
 
+============================================================
+📖 CHAPTER 3 – DEFAULT SPRING SECURITY BEHAVIOR
+============================================================
 
-------------------------------------------------------------------
---------------- UserDetailsService & PasswordEncoder -------------
-------------------------------------------------------------------
+--> By default, every endpoint requires authentication
+--> Default username: user
+--> Password: printed in console logs at startup
 
+Example log:
+Using generated security password: a1b2c3d4-xxxx-xxxx
+
+This is only good for quick testing.
+We need custom users + MongoDB → handled in later chapters.
+
+
+============================================================
+📖 CHAPTER 4 – CUSTOM SECURITY CONFIGURATION
+============================================================
+
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http.authorizeHttpRequests(request -> request
+                    .requestMatchers("/public/**").permitAll()
+                    .requestMatchers("/journal/**", "/user/**").authenticated()
+                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated())
+            .httpBasic(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .build();
+}
+
+Explanation:
+--> /public/** → anyone can access
+--> authenticated() → login required
+--> hasRole("ADMIN") → only admin users can access
+--> anyRequest().authenticated() → catch-all rule
+--> httpBasic() → enables HTTP Basic Auth (simple username/password)
+--> csrf().disable() → disable CSRF for REST APIs
+
+
+============================================================
+📖 CHAPTER 5 – CONNECTING TO MONGODB
+============================================================
+
+application.properties:
+
+spring.data.mongodb.uri=mongodb+srv://<username>:<password>@<cluster-url>/<database>?retryWrites=true&w=majority&authSource=admin
+
+--> Users stored & retrieved from MongoDB
+--> Requires spring-boot-starter-data-mongodb dependency
+
+
+============================================================
+📖 CHAPTER 6 – CREATING USER ENTITY & REPOSITORY
+============================================================
+
+User.java:
+@Data
+@Document
+public class User {
+    private String id;
+    private String username;
+    private String password;
+    private List<String> roles;
+}
+
+UserRepository.java:
+public interface UserRepository extends MongoRepository<User, String> {
+    Optional<User> findByUsername(String username);
+}
+
+
+============================================================
+📖 CHAPTER 7 – PASSWORD ENCODING WITH BCRYPT
+============================================================
+
+@Bean
 public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
 }
 
-1] UserDetailsService
-    Spring Security interface used to load user-specific data during authentication.
-    Custom implementation (UserDetailsServiceImpl) retrieves user details from the database (MongoDB in this case).
-    Method loadUserByUsername(String username) returns a UserDetails object containing username, password, and roles.
-    Integrates your application’s User entity with Spring Security authentication flow.
-
-2] PasswordEncoder
-    BCryptPasswordEncoder hashes passwords before storing them in the database.
-    Ensures passwords are not stored in plaintext.
-    During login, Spring Security compares hashed passwords automatically.
+--> Prevents storing plaintext passwords
+--> Spring Security automatically verifies hashed password during login
 
 
-
-------------------------------------------------------------------
------------------- Custom Security Configuration -----------------
-------------------------------------------------------------------
-
-1] SecurityFilterChain
-    Spring Security 6 no longer requires extending WebSecurityConfigurerAdapter.
-    Define SecurityFilterChain bean to configure authorization rules.
-
-2] Endpoint segregation
-    /public/** → public endpoints, no login needed.
-    /journal/** and /user/** → authenticated endpoints.
-    /admin/** → accessible only by users with ROLE_ADMIN.
-    .anyRequest().authenticated() → any unspecified endpoint also requires login.
-
-3] HTTP Basic Authentication
-    Simple authentication mechanism using username/password.
-    Credentials sent in Authorization header (Base64 encoded).
-    Suitable for testing APIs (like Postman), not recommended for production.
-
-4] CSRF
-    Disabled for REST APIs (stateless) using:
-    .csrf(AbstractHttpConfigurer::disable)
-    Avoids issues with stateful sessions in APIs.
+============================================================
+📖 CHAPTER 8 – CUSTOM USERDETAILSSERVICE
+============================================================
 
 
+@Service
+public class UserDetailsServiceImpl implements UserDetailsService {
+    @Autowired
+    private UserRepository userRepository;
 
-------------------------------------------------------------------
-
------------------------ User Creation & Roles ----------------------
-
-------------------------------------------------------------------
-
-1] User Entity
-    Contains fields like username, password, and roles.
-    Passwords should always be stored hashed (BCrypt).
-
-2] UserRepository
-    Spring Data MongoDB repository for CRUD operations on users.
-
-3] User Creation Endpoint
-    Publicly accessible endpoint to allow new user registration.
-    @PostMapping("/users")
-    public void createUser(@RequestBody User user){
-        userService.saveEntry(user);
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList())
+        );
     }
+}
 
-4] Role-Based Authorization
-    Role list in user entity enables fine-grained access control.
-    Example: only ADMIN can access /admin/**.
+--> Integrates Spring Security with MongoDB user data
 
 
+============================================================
+📖 CHAPTER 9 – ROLE-BASED ACCESS CONTROL
+============================================================
+
+--> Users have roles: [USER], [ADMIN]
+--> Spring Security expects ROLE_ prefix internally
+--> hasRole("ADMIN") checks for ROLE_ADMIN
+
+.requestMatchers("/admin/**").hasRole("ADMIN")
+
+
+============================================================
+📖 CHAPTER 10 – GLOBAL EXCEPTION HANDLING
+============================================================
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        Map<String, Object> error = new LinkedHashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("status", HttpStatus.NOT_FOUND.value());
+        error.put("error", "Not Found");
+        error.put("message", ex.getMessage());
+        error.put("path", request.getRequestURI());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+}
+
+--> Consistent JSON error responses
+--> No raw stack traces exposed
+--> Easier debugging for frontend
+
+
+============================================================
+📖 CHAPTER 11 – TESTING WITH POSTMAN
+============================================================
+
+--> Public endpoints → no auth needed
+--> Authenticated endpoints → send Basic Auth header
+--> Admin endpoints → use account with ROLE_ADMIN
+
+Steps:
+1. Create user with POST /public/users
+2. Login using Basic Auth with username:password
+3. Access /journal/** (authenticated)
+4. Access /admin/** (only admin role can access)
