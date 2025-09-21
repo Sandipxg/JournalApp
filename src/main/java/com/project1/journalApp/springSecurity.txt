@@ -133,7 +133,6 @@ public PasswordEncoder passwordEncoder() {
 📖 CHAPTER 8 – CUSTOM USERDETAILSSERVICE
 ============================================================
 
-
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired

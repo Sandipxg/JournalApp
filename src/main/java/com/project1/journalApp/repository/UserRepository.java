@@ -9,7 +9,7 @@ public interface UserRepository extends MongoRepository<User, ObjectId> {
 
     User findByUsername(String username);
 
-    void deleteByUserName(String username);
+    void deleteByUsername(String username);
     // Spring_is_smart
     // Spring Data reads your method name, builds a query automatically,
     // executes it, maps the result to User, and returns it...

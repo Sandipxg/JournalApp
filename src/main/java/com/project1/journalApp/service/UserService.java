@@ -1,8 +1,6 @@
 package com.project1.journalApp.service;
 
-import com.project1.journalApp.entity.JournalEntry;
 import com.project1.journalApp.entity.User;
-import com.project1.journalApp.repository.JournalEntryRepository;
 import com.project1.journalApp.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +24,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void saveEntry(User user){
+    public void saveNewUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList("USER"));
         userRepository.save(user);
     }
 
-    public void saveNewUser(User user){
+    public void saveUser(User user){
         userRepository.save(user);
     }
 

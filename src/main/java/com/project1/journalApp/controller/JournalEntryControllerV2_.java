@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -27,8 +30,11 @@ public class JournalEntryControllerV2_ {
     @Autowired
     private UserService userService;
 
-    @GetMapping("{userName}")
-    public ResponseEntity<?> getAllJournalEntriesOfUser(@PathVariable String userName){
+    @GetMapping
+    public ResponseEntity<?> getAllJournalEntriesOfUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+
         User user = userService.findByUserName(userName);
         List<JournalEntry> all = user.getJournalEntries();
         if(all!=null && !all.isEmpty())
@@ -36,11 +42,14 @@ public class JournalEntryControllerV2_ {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("{userName}")
-    public ResponseEntity createEntry(@RequestBody JournalEntry myEntry,@PathVariable String userName){
+    @PostMapping
+    public ResponseEntity createEntry(@RequestBody JournalEntry myEntry){
         try{
         //myEntry.setDate(LocalDateTime.now());
+         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         String userName = authentication.getName();
         journalEntryService.saveEntry(myEntry,userName);
+
         return new ResponseEntity<>(myEntry, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -49,10 +58,18 @@ public class JournalEntryControllerV2_ {
 
     @GetMapping("id/{Myid}")
     public ResponseEntity<JournalEntry> getJournalEntryByID(@PathVariable ObjectId Myid){
-        Optional<JournalEntry> journalEntry = journalEntryService.findById(Myid);
-        if(journalEntry!=null){
-        return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK); }
-        else return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        User user = userService.findByUserName(userName);
+        List<JournalEntry> collect = user.getJournalEntries().stream().filter(x -> x.getId().equals(Myid)).collect(Collectors.toList());
+
+        if(!collect.isEmpty()){
+            Optional<JournalEntry> journalEntry = journalEntryService.findById(Myid);
+            if(journalEntry!=null){
+                return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK); }
+        }
+
+       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("id{userName}/{Myid}")
