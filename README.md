@@ -44,102 +44,73 @@ JournalApp/
 └── 📦 pom.xml                    # Dependencies
 ```
 ---
-## 🛠️ Tech Stack
-- ☕ **Java 17** - Core programming language
-- 🍃 **Spring Boot 3.x** - Application framework
-- 🔐 **Spring Security** - Authentication and authorization
-- 🗄️ **MongoDB** - NoSQL database
-- 🏗️ **Maven** - Build tool
-- 🔑 **BCrypt** - Password encryption
-- 📊 **Lombok** - Reduce boilerplate code
----
 ## 🚀 Getting Started
 ### 📋 Prerequisites
 - ☕ Java 17 or higher
-- 🗄️ MongoDB installed and running
-- 🏗️ Maven 3.6+
-### 🔧 Installation
-1. 📥 **Clone the repository**
-   ```bash
-   git clone https://github.com/Sandipxg/JournalApp.git
-   cd JournalApp
-   ```
-2. ⚙️ **Configure MongoDB**
-   
-   Update `application.properties` with your MongoDB connection details:
-   ```properties
-   spring.data.mongodb.uri=mongodb://localhost:27017/journaldb
-   ```
-3. 🏗️ **Build the project**
-   ```bash
-   mvn clean install
-   ```
-4. ▶️ **Run the application**
-   ```bash
-   mvn spring-boot:run
-   ```
-5. ✅ **Access the application**
-   
-   The application will be available at `http://localhost:8080`
+- 🍃 MongoDB 4.0 or higher
+- 🔨 Maven 3.6 or higher
+### ⚙️ Configuration
+1. 📝 Update `application.properties` with your MongoDB connection string:
+```properties
+spring.data.mongodb.uri=mongodb://localhost:27017/journaldb
+```
+### 🏃 Running the Application
+1. 📥 Clone the repository:
+```bash
+git clone https://github.com/Sandipxg/JournalApp.git
+```
+2. 📂 Navigate to the project directory:
+```bash
+cd JournalApp
+```
+3. 🔨 Build the project:
+```bash
+mvn clean install
+```
+4. ▶️ Run the application:
+```bash
+mvn spring-boot:run
+```
+The application will start on `http://localhost:8080`
 ---
-## 📍 API Endpoints
-### 🔐 Public Endpoints
-```http
-POST /public/signup          # Create new user account
-POST /public/login           # User login
-```
-### 📔 Journal Entry Endpoints
-```http
-GET    /journal              # Get all journal entries for logged-in user
-POST   /journal              # Create a new journal entry
-GET    /journal/{id}         # Get a specific journal entry
-PUT    /journal/{id}         # Update a journal entry
-DELETE /journal/{id}         # Delete a journal entry
-```
-### 👤 User Endpoints
-```http
-GET    /user                 # Get all users (Admin only)
-POST   /user                 # Create new user (Admin only)
-PUT    /user                 # Update user profile
-DELETE /user                 # Delete user account
-```
+## 🔌 API Endpoints
+### 🔓 Public Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/public/create-user` | Register a new user |
+### 🔐 Authenticated Endpoints
+#### 📔 Journal Entry Operations
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/journal` | Create a new journal entry |
+| GET | `/journal` | Get all entries for logged-in user |
+| GET | `/journal/{id}` | Get specific journal entry |
+| PUT | `/journal/{id}` | Update a journal entry |
+| DELETE | `/journal/{id}` | Delete a journal entry |
+#### 👤 User Operations
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| PUT | `/user` | Update user information |
+| DELETE | `/user` | Delete user account |
 ---
-## 🔒 Security Features
-- ✅ **Password Encryption** - BCrypt hashing algorithm
-- ✅ **JWT Authentication** - Secure token-based authentication
-- ✅ **Role-Based Access** - Different permissions for Admin and User roles
-- ✅ **Input Validation** - Server-side validation for all inputs
-- ✅ **Secure APIs** - Protected endpoints with Spring Security
+## 🛠️ Technologies Used
+- ☕ **Java 17** - Programming language
+- 🍃 **Spring Boot** - Application framework
+- 🔐 **Spring Security** - Authentication and authorization
+- 🍃 **Spring Data MongoDB** - Database integration
+- 💾 **MongoDB** - NoSQL database
+- 🔒 **BCrypt** - Password encryption
+- 🌐 **REST API** - API architecture
+- 🔨 **Maven** - Build tool
 ---
-## 💡 Usage Example
-### Creating a Journal Entry
-```json
-POST /journal
-{
-  "title": "My First Journal Entry",
-  "content": "Today was an amazing day. I learned so much about Spring Boot!",
-  "date": "2024-01-15"
-}
-```
-### User Registration
-```json
-POST /public/signup
-{
-  "userName": "johndoe",
-  "email": "john@example.com",
-  "password": "securePassword123"
-}
-```
+## 🔐 Security Features
+- 🔑 BCrypt password hashing
+- 🛡️ Role-based access control (RBAC)
+- 🔒 Secured API endpoints
+- 👤 User-specific data access
+- 🔐 Authentication required for sensitive operations
 ---
-## 🎯 Key Features Explained
-### 🔐 Authentication Flow
-1. User signs up with username, email, and password
-2. Password is encrypted using BCrypt
-3. User logs in with credentials
-4. JWT token is generated for secure API access
-5. Token is validated for protected endpoints
-### 📔 Journal Management
-- Users can only access their own journal entries
+## 📝 Journal Entry Features
 - Full CRUD operations supported
 - Entries are automatically associated with the logged-in user
 - Timestamp tracking for all entries
@@ -160,25 +131,9 @@ POST /public/signup
 - ☁️ Cloud storage integration
 - 🔄 Entry versioning and history
 ---
-## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-1. 🍴 Fork the repository
-2. 🌿 Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. 📤 Push to the branch (`git push origin feature/AmazingFeature`)
-5. 🔄 Open a Pull Request
----
-## 📄 License
-This project is open source and available under the MIT License.
----
 ## 👨‍💻 Author
 **Sandip Godhani**
 - 🐙 GitHub: [@Sandipxg](https://github.com/Sandipxg)
----
-## 🙏 Acknowledgments
-- 🍃 Spring Boot team for the amazing framework
-- 🍃 MongoDB for the flexible database solution
-- 💚 The open-source community for inspiration and support
 ---
 <div align="center">
 
