@@ -1,13 +1,8 @@
 # 📔 JournalApp
-
 ## 📖 Introduction
-
 JournalApp is a secure and feature-rich journaling application built with Spring Boot. This application allows users to create, manage, and organize their personal journal entries with robust security features and a RESTful API architecture. Whether you want to document your daily thoughts, track your progress, or maintain a personal diary, JournalApp provides a reliable platform for all your journaling needs.
-
 ---
-
 ## ✨ Features
-
 - 📝 **Create Journal Entries** - Write and save your thoughts with ease
 - 🔍 **Read Entries** - Access and view all your journal entries
 - ✏️ **Update Entries** - Edit and modify existing journal entries
@@ -18,11 +13,8 @@ JournalApp is a secure and feature-rich journaling application built with Spring
 - 🛡️ **Role-Based Access Control** - Admin and user roles with different privileges
 - 🌐 **RESTful API** - Clean and intuitive API endpoints
 - 💾 **MongoDB Integration** - NoSQL database for flexible data storage
-
 ---
-
 ## 📂 Project Structure
-
 ```
 JournalApp/
 │
@@ -40,164 +32,125 @@ JournalApp/
 │   │   ├── JournalEntryRepository.java
 │   │   └── UserRepository.java
 │   │
-│   ├── ⚙️ service/              # Business Logic
+│   ├── 🔧 service/              # Business Logic
 │   │   ├── JournalEntryService.java
-│   │   ├── UserService.java
-│   │   └── UserDetailsServiceImpl.java
+│   │   └── UserService.java
 │   │
-│   ├── 🔧 config/               # Configuration Files
-│   │   ├── SecurityConfig.java
-│   │   └── SpringSecurity.java
-│   │
-│   └── 🚀 JournalApplication.java # Main Application Class
+│   └── 📱 JournalApplication.java
 │
-└── 📄 pom.xml                   # Maven Dependencies
+├── 📁 src/main/resources/
+│   └── ⚙️ application.properties  # Configuration
+│
+└── 📦 pom.xml                    # Dependencies
 ```
-
 ---
-
-## 🛠️ Technologies Used
-
-- ☕ **Java 17** - Programming language
+## 🛠️ Tech Stack
+- ☕ **Java 17** - Core programming language
 - 🍃 **Spring Boot 3.x** - Application framework
 - 🔐 **Spring Security** - Authentication and authorization
 - 🗄️ **MongoDB** - NoSQL database
-- 📦 **Maven** - Dependency management and build tool
+- 🏗️ **Maven** - Build tool
 - 🔑 **BCrypt** - Password encryption
-- 📡 **REST API** - API architecture
-- 🔗 **Lombok** - Reduce boilerplate code (optional)
-
+- 📊 **Lombok** - Reduce boilerplate code
 ---
-
 ## 🚀 Getting Started
-
 ### 📋 Prerequisites
-
 - ☕ Java 17 or higher
-- 📦 Maven 3.6+
-- 🍃 MongoDB 4.4+
-- 🔧 IDE (IntelliJ IDEA, Eclipse, or VS Code)
-
-### ⚙️ Installation
-
-1️⃣ **Clone the repository**
-```bash
-git clone https://github.com/Sandipxg/JournalApp.git
-cd JournalApp
-```
-
-2️⃣ **Configure MongoDB**
-- Ensure MongoDB is running on `localhost:27017`
-- Or update the connection string in `application.properties`
-
-```properties
-spring.data.mongodb.uri=mongodb://localhost:27017/journalApp
-```
-
-3️⃣ **Build the project**
-```bash
-mvn clean install
-```
-
-4️⃣ **Run the application**
-```bash
-mvn spring-boot:run
-```
-
-The application will start on `http://localhost:8080`
-
+- 🗄️ MongoDB installed and running
+- 🏗️ Maven 3.6+
+### 🔧 Installation
+1. 📥 **Clone the repository**
+   ```bash
+   git clone https://github.com/Sandipxg/JournalApp.git
+   cd JournalApp
+   ```
+2. ⚙️ **Configure MongoDB**
+   
+   Update `application.properties` with your MongoDB connection details:
+   ```properties
+   spring.data.mongodb.uri=mongodb://localhost:27017/journaldb
+   ```
+3. 🏗️ **Build the project**
+   ```bash
+   mvn clean install
+   ```
+4. ▶️ **Run the application**
+   ```bash
+   mvn spring-boot:run
+   ```
+5. ✅ **Access the application**
+   
+   The application will be available at `http://localhost:8080`
 ---
-
-## 📡 API Overview
-
-### 🔓 Public Endpoints
-
-- 📝 **POST** `/public/create-user` - Register a new user
-
-### 🔐 User Endpoints (Requires Authentication)
-
-#### Journal Entry Management
-- 📖 **GET** `/journal` - Get all journal entries for the logged-in user
-- ➕ **POST** `/journal` - Create a new journal entry
-- 🔍 **GET** `/journal/{id}` - Get a specific journal entry by ID
-- ✏️ **PUT** `/journal/{id}` - Update a journal entry
-- ❌ **DELETE** `/journal/{id}` - Delete a journal entry
-
-#### User Management
-- 👤 **GET** `/user` - Get current user details
-- ✏️ **PUT** `/user` - Update user profile
-- 🗑️ **DELETE** `/user` - Delete user account
-
-### 👑 Admin Endpoints (Requires ADMIN Role)
-
-- 👥 **GET** `/admin/all-users` - Get all users
-- 🔧 **POST** `/admin/create-admin-user` - Create a new admin user
-
+## 📍 API Endpoints
+### 🔐 Public Endpoints
+```http
+POST /public/signup          # Create new user account
+POST /public/login           # User login
+```
+### 📔 Journal Entry Endpoints
+```http
+GET    /journal              # Get all journal entries for logged-in user
+POST   /journal              # Create a new journal entry
+GET    /journal/{id}         # Get a specific journal entry
+PUT    /journal/{id}         # Update a journal entry
+DELETE /journal/{id}         # Delete a journal entry
+```
+### 👤 User Endpoints
+```http
+GET    /user                 # Get all users (Admin only)
+POST   /user                 # Create new user (Admin only)
+PUT    /user                 # Update user profile
+DELETE /user                 # Delete user account
+```
 ---
-
-## 🔐 Security
-
-The application implements robust security measures:
-
-- 🔑 **Password Encryption** - All passwords are hashed using BCrypt
-- 🛡️ **Spring Security** - Handles authentication and authorization
-- 🎭 **Role-Based Access** - Different access levels for users and admins
-- 🔒 **Session Management** - Secure session handling
-- 🚫 **CSRF Protection** - Protection against cross-site request forgery
-- 🌐 **HTTP Basic Authentication** - Secure API access
-
+## 🔒 Security Features
+- ✅ **Password Encryption** - BCrypt hashing algorithm
+- ✅ **JWT Authentication** - Secure token-based authentication
+- ✅ **Role-Based Access** - Different permissions for Admin and User roles
+- ✅ **Input Validation** - Server-side validation for all inputs
+- ✅ **Secure APIs** - Protected endpoints with Spring Security
 ---
-
-## 🗃️ Entities
-
-### 📓 JournalEntry
-
-```java
+## 💡 Usage Example
+### Creating a Journal Entry
+```json
+POST /journal
 {
-  "id": "ObjectId",
-  "title": "String",
-  "content": "String",
-  "date": "LocalDateTime"
+  "title": "My First Journal Entry",
+  "content": "Today was an amazing day. I learned so much about Spring Boot!",
+  "date": "2024-01-15"
 }
 ```
-
-- 🆔 **id** - Unique identifier (MongoDB ObjectId)
-- 📌 **title** - Title of the journal entry
-- 📝 **content** - Content/body of the journal entry
-- 📅 **date** - Timestamp of entry creation
-
-### 👤 User
-
-```java
+### User Registration
+```json
+POST /public/signup
 {
-  "id": "ObjectId",
-  "userName": "String",
-  "password": "String (encrypted)",
-  "roles": ["String"],
-  "journalEntries": ["JournalEntry"]
+  "userName": "johndoe",
+  "email": "john@example.com",
+  "password": "securePassword123"
 }
 ```
-
-- 🆔 **id** - Unique identifier (MongoDB ObjectId)
-- 👤 **userName** - Unique username
-- 🔐 **password** - Encrypted password (BCrypt)
-- 🎭 **roles** - User roles (USER, ADMIN)
-- 📚 **journalEntries** - List of journal entries associated with the user
-
 ---
-
-## 📝 Project Notes
-
-### 🎯 Key Highlights
-
-- ✅ **Clean Architecture** - Well-organized code structure following best practices
-- ✅ **Security First** - Built with security as a priority
-- ✅ **RESTful Design** - Follows REST API design principles
+## 🎯 Key Features Explained
+### 🔐 Authentication Flow
+1. User signs up with username, email, and password
+2. Password is encrypted using BCrypt
+3. User logs in with credentials
+4. JWT token is generated for secure API access
+5. Token is validated for protected endpoints
+### 📔 Journal Management
+- Users can only access their own journal entries
+- Full CRUD operations supported
+- Entries are automatically associated with the logged-in user
+- Timestamp tracking for all entries
+---
+## 🎨 Why JournalApp?
+- ✅ **Production-Ready** - Built with enterprise-grade frameworks
+- ✅ **Secure** - Industry-standard security practices
+- ✅ **RESTful Design** - Clean and maintainable API structure
 - ✅ **Scalable** - Easy to extend and add new features
 - ✅ **MongoDB Integration** - Flexible NoSQL database for dynamic data
-
 ### 🚧 Future Enhancements
-
 - 🏷️ Tags and categories for journal entries
 - 🔍 Advanced search and filtering
 - 📊 Analytics and insights
@@ -206,46 +159,30 @@ The application implements robust security measures:
 - 📧 Email notifications
 - ☁️ Cloud storage integration
 - 🔄 Entry versioning and history
-
 ---
-
 ## 🤝 Contributing
-
 Contributions are welcome! Please feel free to submit a Pull Request.
-
 1. 🍴 Fork the repository
 2. 🌿 Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. 💾 Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. 📤 Push to the branch (`git push origin feature/AmazingFeature`)
 5. 🔄 Open a Pull Request
-
 ---
-
 ## 📄 License
-
 This project is open source and available under the MIT License.
-
 ---
-
 ## 👨‍💻 Author
-
-**Sandip Gautam**
+**Sandip Godhani**
 - 🐙 GitHub: [@Sandipxg](https://github.com/Sandipxg)
-
 ---
-
 ## 🙏 Acknowledgments
-
 - 🍃 Spring Boot team for the amazing framework
 - 🍃 MongoDB for the flexible database solution
 - 💚 The open-source community for inspiration and support
-
 ---
-
 <div align="center">
 
 ### ⭐ Star this repository if you find it helpful!
-
-**Made with ❤️ by Sandip Gautam**
+**Made with ❤️ by Sandip Godhani**
 
 </div>
