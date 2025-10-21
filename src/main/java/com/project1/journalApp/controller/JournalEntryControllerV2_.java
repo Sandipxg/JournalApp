@@ -83,7 +83,7 @@ public class JournalEntryControllerV2_ {
     }
 
     @PutMapping("/{Myid}")
-    public ResponseEntity EditDataById(ObjectId Myid,@RequestBody JournalEntry newEntry)
+    public ResponseEntity EditDataById(@PathVariable ObjectId Myid,@RequestBody JournalEntry newEntry)
     {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
