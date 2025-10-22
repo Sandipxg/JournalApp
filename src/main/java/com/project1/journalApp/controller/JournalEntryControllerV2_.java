@@ -27,7 +27,7 @@ public class JournalEntryControllerV2_ {
     @Autowired
     private JournalEntryService journalEntryService;
 
-    @Autowired
+    @Autowired // [ injects all class objects also its dependencies ] in easy words
     private UserService userService;
 
     @GetMapping
