@@ -1,0 +1,56 @@
+Here's how the user-journal entry relationship is established and maintained in your JournalApp project:
+
+**1. Journal Entry & User Structure:**
+    --> Each **User** has a list of journal entries. This is mapped using the `@DBRef` annotation
+    –-> meaning that instead of storing the full journal entry objects inside the user document,
+      only references (IDs) to those entries are stored.
+    –-> In the `User.java` entity:
+       @DBRef
+       private List<JournalEntry> journalEntries = new ArrayList<>();
+    –-> The **JournalEntry** entity contains entry fields (title, content, date),
+       and has its own unique ID for reference.
+
+**2. Creating & Linking Entries:**
+    –-> When a user creates a new journal entry (via REST endpoint `/journal`),
+        the entry is saved and its reference (ID) is added to that user's journal entry list.
+
+    –-> This is managed by the `JournalEntryService.saveEntry()` method. It:
+        - Finds the user based on the security context (current login).
+        - Saves the new journal entry in the database.
+        - Adds the ID of this new entry to the user's `journalEntries` list and saves the updated user object.
+
+**3. Viewing Journal Entries:**
+    –-> When fetching journal entries (`GET /journal`),
+        the controller uses the current logged-in user's username to:
+      - Pull the user's document from the database.
+      - Deliver only the journal entries referenced in that user's document.
+
+    –-> Similarly, for a specific entry (`GET /journal/id/{Myid}`),
+
+        it ensures that the requested entry ID is present in the logged-in user's list before delivering it.
+
+**4. Security Enforcement:**
+    –-> All journal entry operations are guarded by Spring Security and context authentication:
+       - Only the logged-in user can access, modify, or delete their entries.
+       - The code checks the authenticated user's identity for all journal access operations.
+
+**5. Can Users View Others' Journals?**
+    –-> According to the current code, users can only see their **own entries**.
+    –-> There is **no endpoint or service** exposed for viewing other users' journals.
+    –-> All queries are restricted by currently authenticated user context.
+
+
+**Summary Table**
+| Operation         | Who Can Access?                       | How Is Access Checked?                                  |
+|-------------------|---------------------------------------|--------------------------------------------------------|
+| View own journals | Only logged-in user                   | By checking user's `journalEntries` list               |
+| View others'      | Not allowed by code                   | No service or endpoint for cross-user journal access   |
+| Add entry         | Only logged-in user                   | Added to their own journal entry list                  |
+| Edit/Delete       | Only their own entries                | Checked against their entry references                 |
+
+
+**Result:**
+    Each user is associated with only their own journal entries and cannot view others’ journals.
+    The relationship is maintained by storing entry references (`@DBRef`) inside each user document,
+    and all endpoints/services enforce authentication and ownership for data access.
+
